@@ -5,6 +5,7 @@
 #### About ECAPI
 https://iabtechlab.com/ecapi 
 
+The Event & Conversion API (commonly known as CAPI) is designed to standardize communication of marketing-related events from advertisers’ systems to advertising platforms and partners. The recipients are able to leverage this information to optimize marketing campaigns toward desired outcomes and to better measure and report on marketing campaign performance across complete marketing funnels.
 
 #### Contact
 For more information, or to get involved, please email support@iabtechlab.com.
