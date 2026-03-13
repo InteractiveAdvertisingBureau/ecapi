@@ -149,7 +149,7 @@ These are the core attributes necessary to operationalize data received through 
 | `currency_code` | string, recommended | The ISO 4217 currency code. This field is required when “value” (above) is set. The currency reported here applies to all monetary fields. If value is set and this field is missing or invalid, the record may be discarded. |
 | `source` | enum, recommended | This field specifies where the event took place. See [source](#source) list. |
 | `properties` | object | This object specifies additional properties associated with the event. |
-| `ext` | object | Placeholder for exchange-specific extensions to OpenRTB. |
+| `ext` | object | Placeholder for exchange-specific extensions. |
 
 ### event_type(s) Enumeration <a name="eventtypes"></a>
 
@@ -216,18 +216,185 @@ While still common, these are generally deemed a lower priority of events that a
       
 ### user_data Object <a name="user_data"></a>
 
+Metadata about the user associated with the event. As noted in the Disclaimer section of the Introduction, each implementer is responsible for ensuring their implementation complies with applicable laws, regulations, or self-regulatory frameworks.
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `customer_identifier` | string | SHA256 hashed customer identifier provided by the advertiser. The receiver will treat it as a custom label. See [Normalization](#normalization) for details. |
+| `uids` | object, array | array of user id objects |
+| `customer_segments` | string, array | Identifies a general category of the customer associated with the event, e.g., Gold Member or High Spender or Frequent Shopper. |
+| `email_address` | string, array | SHA256 hashed email addresses.
+See [Normalization](#normalization) for details. |
+| `phone_numbers` | string, array | SHA256 hashed phone numbers
+Remove symbols, letters, and any leading zeros. Phone numbers must include a (+) prefix and country code to be used for matching (e.g., the number 1 must precede a phone number in the United States). Always include the country code as part of your customers' phone numbers, even if all of your data is from the same country. |
+| `utcoffset` | integer | Local time as the number +/- of minutes from UTC. |
+| `address` | object, array | These should be addresses known to be associated with the user. See [address Object](#addressobject) for details. |
+| `gpp_string` | string | Contains the Global Privacy Platform’s consent string. See the [Global Privacy Platform specification](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform) for more details. |
+| `gpp_sid` | integer, array | Array of the section(s) of the string which should be applied for this transaction. Generally will contain one and only one value, but there are edge cases where more than one may apply. GPP Section 3 (Header) and 4 (Signal Integrity) do not need to be included. See the [GPP Section Information](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform/blob/main/Sections/Section%20Information.md) for more details. |
+| `mmt_only` | boolean, may be required in relevant jurisdictions. | A flag that indicates we should not use this event for ads delivery optimization. If set to true, we only use the event for attribution. |
+| `click_id` | string | Click ID for the appropriate partner/platform that is receiving the conversion event. This may be shared as a campaign ID. |
+| `impression_id` | string | Impression id for the appropriate partner/platform receiving the conversion event. |
+| `event_ip_address` | string | The IP address corresponding to the event. This must be a valid IPV4 or IPV6 address. |
+| `event_user_agent` | string | The user agent for the browser corresponding to the event. |
+| `ifa` | string | Device identifier for advertising. |
+| `landing_ip_address` | string | The IP address from which the consumer most recently accessed the campaign landing page after clicking on an ad before the conversion event. |
+| `landing_user_agent` | string | The user agent recorded at the time the landing_ip_address (above) was captured. |
+| `age_range` | enum | See enumeration in [age_range](#agerange). |
+| `gender` | string | SHA256 hashed gender. See [Normalization](#normalization) for details. |
+| `ext` | object | Placeholder for exchange-specific extensions. |
+
 ### uids Object <a name="uids"></a>
+
+Defines a user identifier, including agent type information.
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `id` | string | SHA256 hashed identifier for the user. See [Normalization](#normalization) for details. |
+| `source` | string | Canonical domain of the ID. |
+| `atype` | integer | Type of user agent the ID is from. Refer to [List: Agent Types in AdCOM 1.0](https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/main/AdCOM%20v1.0%20FINAL.md#list_agenttypes) |
+| `ext` | object | Placeholder for exchange-specific extensions. |
 
 ### address Object <a name="address"></a>
 
+Defines an address associated with an event.
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `first_name` | string | SHA256 hashed first name. See [Normalization](#normalization) for details. |
+| `last_name` | string | SHA256 hashed last name. See [Normalization](#normalization) for details. |
+| `street` | string | SHA256 hashed street address. See [Normalization](#normalization) for details. |
+| `city` | string | City. using Roman alphabet a-z characters is recommended. Lowercase only with no punctuation. If using special characters, the text must be encoded in UTF-8 format. |
+| `state` | string | State. using Roman alphabet a-z characters is recommended. Lowercase only with no punctuation. If using special characters, the text must be encoded in UTF-8 format. |
+| `country_code` | string | Country code using the 2-letter country codes in ISO 3166-1 is recommended. Lowercase only with no punctuation. |
+| `postal_code` | string | SHA256 hashed postal code. See [Normalization](#normalization) for details. This is a 5 digit code for US zip codes. For the UK, the postal code is the area, district, and sector format. |
+| `address_type` | enum | Labels the address as either a billing or shipping address if known. 1. billing 2. shipping 3. unknown |
+| `ext` | object | Placeholder for exchange-specific extensions. |
+
 ### item Object <a name="item"></a>
+
+The item object is a part of the properties object. It focuses on event specific metadata related to items/products associated with events.
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `id` | string | Unique ID that identifies a UPC or SKU. |
+| `name` | string | Product name. |
+| `price` | float | Product price. The currency is assumed to be what is defined in the core event object currency field. |
+| `discount` | float | The unit monetary discount value associated with the item. The currency is assumed to be what is defined in the core event object currency field. |
+| `quantity` | float | The quantity of the item. |
+| `brand` | string | The brand of the item. |
+| `affiliation` | string | A product affiliation to designate a supplying company or brick and mortar store location. |
+| `category` | string | Descriptive category of the product. The taxonomy used should be declared in the cattax field. |
+| `cattax` | enum | The taxonomy used in the category field. Use [List: Category Taxonomies](https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/f3f2e40ab01093276a731ef506be4d5af5149392/AdCOM%20v1.0%20FINAL.md#list_categorytaxonomies) in AdCOM 1.0 [IAB Tech Lab Ad Product Taxonomy 2.0](https://github.com/InteractiveAdvertisingBureau/Taxonomies/blob/main/Ad%20Product%20Taxonomies/Ad%20Product%20Taxonomy%202.0.tsv) is recommended. |
+| `item_coupon` | string | The coupon name/code associated with the event. |
+| `item_list_id` | string | The ID of the list in which the item was presented to the user. |
+| `item_list_name` | string | The name of the list in which the item was presented to the user. |
+| `item_item_variant` | string | The item variant or unique code or description for additional item details/options. |
+| `item_location_id` | string | The physical location associated with the item. |
+| `ext` | object | Placeholder for exchange-specific extensions. |
 
 ### age_range Enumeration <a name="age_range"></a>
 
+Age range of the user associated with an event.
+
+| Enumeration | Age Range |
+| --- | --- |
+| `1` | 18-20 |
+| `2` | 21-24 |
+| `3` | 25-29 |
+| `4` | 30-34 |
+| `5` | 35-39 |
+| `6` | 40-44 |
+| `7` | 44-49 |
+| `8` | 50-54 |
+| `9` | 55-59 |
+| `10` | 60-64 |
+| `11` | 65-69 |
+| `12` | 70-74 |
+| `13` | 75+ |
+
 ### source Enumeration <a name="source"></a>
+
+Values that specify where your event occurred.
+
+| Source | Description |
+| --- | --- |
+| `email` | Event happened over email. |
+| `website` | Event happened via a website. |
+| `app` | Event happened via an app. |
+| `phone_call` | Event happened via a phone call. |
+| `chat` | Event happened over chat. |
+| `physical_store` | Event happened in person in a physical store. |
+| `system_generated` | Event happened automatically, such as a subscription renewal set to auto-pay. |
+| `business_messaging` | Event occurred via a business messaging app. |
+| `other` | Event happened in a way that’s not listed. |
 
 ### properties Object <a name="properties"></a>
 
+Additional metadata that may be provided for some event types.
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `transaction_id` | string | Identifier for a transaction associated with the event. |
+| `items` | object, array | Items and associated item metadata associated with the event. |
+| `page_url` | string | The URL of a page. |
+| `ad_source` | string | The value of the utm_source parameter. |
+| `referrer` | string | Traffic referrer for the event. |
+| `coupon` | string, array | A coupon name/code associated with the event. |
+| `shipping` | float | Shipping cost associated with the event. The currency is assumed to be what is defined in the core event object currency field. |
+| `tax` | float | Tax cost associated with a transaction. The currency is assumed to be what is defined in the core event object currency field. |
+| `payment_type` | string, array | The chosen payment method. |
+| `shipping_tier` | string | The shipping tier associated with the event. |
+| `virtual_currency_name` | string | Virtual currency used to purchase the items associated with the event. |
+| `virtual_item_name` | string | Name of the virtual item purchased. |
+| `lead_source` | string | The source of the lead. |
+| `lead_status` | string | The status of the lead. |
+| `lead_reason` | string | The reason for the lead. |
+| `ad_platform` | string | The ad platform. |
+| `ad_format` | string | The ad format used. |
+| `ad_unit_name` | string | The ad unit name. |
+| `login_method` | string | The method used to login. |
+| `group_id` | string | The ID of the group associated with the event. |
+| `character_level` | integer | The level of the character associated with the event. |
+| `character` | string | The character that leveled up. |
+| `post_score` | integer | A score associated with the event that will be posted. |
+| `achievement_id` | string | The ID of an achievement associated with the event. |
+| `search_term` | string | The term used for the search. |
+| `creative_name` | string | The name of the promotional creative. |
+| `creative_slot` | string | The name of the promotional creative slot associated with the item. |
+| `promotion_id` | string | The promotion id. |
+| `promotion_name` | string | The name used to identify a specific promotion or strategic campaign. |
+| `availability` | enum | Value must be one of the following: 1. available soon 2. for rent 3. for sale 4. off market 5. recently sold 6. sale pending |
+| `body_style` | enum | Body style of the vehicle should be one of the following: 1. convertible 2. coupe 3. hatchback 4. minivan 5. truck 6. suv 7. sedan 8. van 9. wagon 10. crossover 11. other |
+| `condition_of_vehicle` | enum | Condition of vehicle should be one of the following: 1. new 2. used |
+| `arrival_date` | string | The date for arrival at the destination in YYYYMMDD or YYYY-MM-DD. |
+| `departure_date` | string | The date of departure in YYYYMMDD or YYYY-MM-DD. |
+| `destination_airport` | string | Use the official IATA code of the destination airport. |
+| `destination_ids` | string | If you have a destination catalog, you can associate one or more destinations in your destination catalog with a specific hotel event. |
+| `drivetrain` | enum | Drivetrain of the vehicle should be one of the following: 1. 4x2 2. 4x4 3. awd 4. fwd 5. rwd 6. other 7. none |
+| `exterior_color` | string | Exterior color. |
+| `fuel_type` | enum | Fuel type of the vehicle should be one of the following: 1. diesel 2. electric 3. flex 4. gasoline 5. hybrid 6. petrol 7. plugin_hybrid 8. other 9. none |
+| `lease_end_date` | string | Lease end date specified using YYYYMMDD or YYYY-MM-DD. |
+| `lease_start_date` | string | Lease start date using YYYYMMDD or YYYY-MM-DD. |
+| `listing_type` | enum | Value must be one of the following: 1. for rent by agent 2. for rent by owner 3. for sale by agent 4. for sale by owner 5. foreclosed 6. new construction 7. new listing. |
+| `make` | string | Make or brand of the vehicle. |
+| `model` | string | Model of the vehicle. |
+| `transmission` | enum | Transmission of the vehicle should be one of the following: 1. automatic 2. manual 3. other 4. none |
+| `vin` | string | Vehicle Identification Number associated with the event. |
+| `ext` | object | Placeholder for exchange-specific extensions. |
+
 ## Verifying the Integration <a name="verifying"></a>
 
+Data quality is critical when it comes to Event & Conversion API integrations. Receiving systems will have verification processes not only for the event communication transactions, but for the data received as well in order to ensure data integrity meets requirements for supporting measurement and optimization use cases. Individual platforms and partners will inform advertisers of their data integrity requirements.
+
 ### Response Codes <a name="responsecodes"></a>
+
+HTTP status codes are used by the receiving partner or platform to communicate the status of requests made by the advertiser:
+
+| Code | Name | Description |
+| --- | --- | --- |
+| `200` | OK | The request was successful. |
+| `400` | Bad Request | The request could not be interpreted successfully. |
+| `401` | Unauthorized | The request did not contain correct authentication information. |
+| `404` | Not Found | The resource does not exist. |
+| `429` | Too Many Requests | The sender has exceeded the rate limit set by the receiver and must wait before trying again. |
+| `500` | Internal Service Error | The receiver has encountered technical difficulties. |
