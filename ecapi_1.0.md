@@ -223,10 +223,8 @@ Metadata about the user associated with the event. As noted in the Disclaimer se
 | `customer_identifier` | string | SHA256 hashed customer identifier provided by the advertiser. The receiver will treat it as a custom label. See [Normalization](#normalization) for details. |
 | `uids` | object, array | array of user id objects |
 | `customer_segments` | string, array | Identifies a general category of the customer associated with the event, e.g., Gold Member or High Spender or Frequent Shopper. |
-| `email_address` | string, array | SHA256 hashed email addresses.
-See [Normalization](#normalization) for details. |
-| `phone_numbers` | string, array | SHA256 hashed phone numbers
-Remove symbols, letters, and any leading zeros. Phone numbers must include a (+) prefix and country code to be used for matching (e.g., the number 1 must precede a phone number in the United States). Always include the country code as part of your customers' phone numbers, even if all of your data is from the same country. |
+| `email_address` | string, array | SHA256 hashed email addresses. See [Normalization](#normalization) for details. |
+| `phone_numbers` | string, array | SHA256 hashed phone numbers. Remove symbols, letters, and any leading zeros. Phone numbers must include a (+) prefix and country code to be used for matching (e.g., the number 1 must precede a phone number in the United States). Always include the country code as part of your customers' phone numbers, even if all of your data is from the same country. |
 | `utcoffset` | integer | Local time as the number +/- of minutes from UTC. |
 | `address` | object, array | These should be addresses known to be associated with the user. See [address Object](#addressobject) for details. |
 | `gpp_string` | string | Contains the Global Privacy Platform’s consent string. See the [Global Privacy Platform specification](https://github.com/InteractiveAdvertisingBureau/Global-Privacy-Platform) for more details. |
@@ -239,7 +237,7 @@ Remove symbols, letters, and any leading zeros. Phone numbers must include a (+)
 | `ifa` | string | Device identifier for advertising. |
 | `landing_ip_address` | string | The IP address from which the consumer most recently accessed the campaign landing page after clicking on an ad before the conversion event. |
 | `landing_user_agent` | string | The user agent recorded at the time the landing_ip_address (above) was captured. |
-| `age_range` | enum | See enumeration in [age_range](#agerange). |
+| `age_range` | enum | See enumeration in [age_range](#age_range). |
 | `gender` | string | SHA256 hashed gender. See [Normalization](#normalization) for details. |
 | `ext` | object | Placeholder for exchange-specific extensions. |
 
