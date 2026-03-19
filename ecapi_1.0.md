@@ -241,6 +241,69 @@ Metadata about the user associated with the event. As noted in the Disclaimer se
 | `gender` | string | SHA256 hashed gender. See [Normalization](#normalization) for details. |
 | `ext` | object | Placeholder for exchange-specific extensions. |
 
+#### Example user_data JSON
+
+The example below represents an impression with user data normalized and hashed. See the [Normalization examples](#normalization-examples) section for the raw and normalized values corresponding to the hashed fields.
+
+```json
+{
+  "customer_identifier": "e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446",
+  "uids": [
+    {
+      "id": "ad57366865126e55649ecb23ae1d48887544976efea46a48eb5d85a6eeb4d306",
+      "source": "example.com",
+      "atype": 1
+    }
+  ],
+  "customer_segments": [
+    "gold_member",
+    "frequent_shopper"
+  ],
+  "email_address": [
+    "b4c9a289323b21a01c3e940f150eb9b8c542587f1abfd8f0e1cc1ffc5e475514"
+  ],
+  "phone_numbers": [
+    "7c8d08bf90ca322bcac37f99ba14e980e4b1f5ba919f7e16a030af9070ba125e"
+  ],
+  "utcoffset": -300,
+  "address": [
+    {
+      "first_name": "81f8f6dde88365f3928796ec7aa53f72820b06db8664f5fe76a7eb13e24546a2",
+      "last_name": "6627835f988e2c5e50533d491163072d3f4f41f5c8b04630150debb3722ca2dd",
+      "city": "new york",
+      "state": "ny",
+      "country_code": "us",
+      "postal_code": "e443169117a184f91186b401133b20be670c7c0896f9886075e5d9b81e9d076b"
+    }
+  ],
+  "gpp_string": "DBACNYA~CPXxRfAPXxRfAAfKABENB-CgAAAAAAAAAAYgAAAAAAAA~1YNN",
+  "gpp_sid": [
+    7
+  ],
+  "impression_id": "imp_123abc",
+  "event_ip_address": "172.16.254.3",
+  "event_user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+  "ifa": "38400000-8cf0-11bd-b23e-10b96e40000d",
+  "age_range": 5,
+  "gender": "9f165139a8c2894a47aea23b77d330eca847264224a44d5a17b19db8b9a72c08",
+  "ext": {
+    "partner_billing": true
+  }
+}
+```
+
+#### Normalization examples:
+
+| Field | Raw | Normalized | SHA256 |
+| --- | --- | --- | --- |
+| `customer_identifier` | `User123` | `user123` | `e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446` |
+| `email_address` | ` User@example.com ` | `user@example.com` | `b4c9a289323b21a01c3e940f150eb9b8c542587f1abfd8f0e1cc1ffc5e475514` |
+| `phone_numbers` | `+1 212-555-0000` | `+12125550000` | `7c8d08bf90ca322bcac37f99ba14e980e4b1f5ba919f7e16a030af9070ba125e` |
+| `address.first_name` | ` Jane ` | `jane` | `81f8f6dde88365f3928796ec7aa53f72820b06db8664f5fe76a7eb13e24546a2` |
+| `address.last_name` | ` Smith ` | `smith` | `6627835f988e2c5e50533d491163072d3f4f41f5c8b04630150debb3722ca2dd` |
+| `gender` | ` Female ` | `female` | `9f165139a8c2894a47aea23b77d330eca847264224a44d5a17b19db8b9a72c08` |
+
+
 ### uids Object <a name="uids"></a>
 
 Defines a user identifier, including agent type information.
