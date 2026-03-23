@@ -79,6 +79,8 @@ THE STANDARDS, THE SPECIFICATIONS, THE MEASUREMENT GUIDELINES, AND ANY OTHER MAT
 
 The Event & Conversion API (commonly known as CAPI) is designed to standardize communication of marketing-related events from advertisers’ systems to advertising platforms and partners. The recipients are able to leverage this information to optimize marketing campaigns toward desired outcomes and to better measure and report on marketing campaign performance across complete marketing funnels.
 
+![](https://github.com/InteractiveAdvertisingBureau/ecapi/blob/main/assets/IAB-TL_CAPI-AECAPI_Illustration.png)
+
 ## How It Works <a name="howitworks"></a>
 
 The Event & Conversion API defines a set of full-funnel events that are of interest to advertisers. By providing these events to partners, advertisers enable them to:
