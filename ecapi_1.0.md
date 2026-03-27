@@ -4,7 +4,7 @@ The IAB Technology Laboratory is a nonprofit research and development consortium
 
 ### Significant Contributors to the ECAPI version specification
 
-Steven Ware Jones, Meta, Sean Bedford, Meta, Randy Weinstein, Basis Technology, Alan Merzon, Google, Chandan Giri, Google, Akchat Jha, Walmart, Barbara Kalicki, Publicis Sapient, Melissa DeLuca, NBC Universal, Celina Mbale, Paramount, Steven Huang, Bytedance, Matt Reid, Roku, Brian May
+Steven Ware Jones, Meta, Sean Bedford, Meta, Randy Weinstein, Basis Technology, Alan Merzon, Google, Chandan Giri, Google, Akchat Jha, Walmart, Barbara Kalicki, Publicis Sapient, Melissa DeLuca, NBC Universal, Celina Mbale, Paramount, Steve Huang, BD TikTok USA, Matt Reid, Roku, Brian May
 
 ### IAB Tech Lab Lead:
 
