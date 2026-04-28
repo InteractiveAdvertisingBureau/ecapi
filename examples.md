@@ -17,7 +17,7 @@
     "email_addresses": ["d7133d32a78e3ceb672ca127d549dbbaab93d4f7276656099c07ffe1889b3783"],
     "phone_numbers":   ["1fa6b8d986d9b9cd01bf36951815158bbde9f520c0567c835dfe34783d0a4231"],
     "timezone": "EST",
-    "opt_out": 0,
+    "mmt_only": 0,
     "age_range": 2,
     "gender": "<sha256-hashed-initial>",
     "event_ip_address": "<valid-ipv4-or-ipv6>",
