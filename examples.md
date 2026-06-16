@@ -88,7 +88,7 @@
         "items_coupon":       "<coupon-code>",
         "items_list_id":      "<list-id>",
         "items_list_name":    "<list-name>",
-        "items_item_variant": "<variant-code>",
+        "items_variant": "<variant-code>",
         "items_location_id":  "<location-id>",
         "ext": {}
       }
