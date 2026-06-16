@@ -288,7 +288,7 @@ The item object is a part of the properties object. It focuses on event specific
 | `item_coupon` | string | The coupon name/code associated with the event. |
 | `item_list_id` | string | The ID of the list in which the item was presented to the user. |
 | `item_list_name` | string | The name of the list in which the item was presented to the user. |
-| `item_item_variant` | string | The item variant or unique code or description for additional item details/options. |
+| `item_variant` | string | The item variant or unique code or description for additional item details/options. |
 | `item_location_id` | string | The physical location associated with the item. |
 | `ext` | object | Placeholder for exchange-specific extensions. |
 
