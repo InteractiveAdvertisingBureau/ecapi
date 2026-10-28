@@ -40,6 +40,8 @@ THE STANDARDS, THE SPECIFICATIONS, THE MEASUREMENT GUIDELINES, AND ANY OTHER MAT
 
 ## [Using Events API](#usingeventsapi)
 
+  - [Hashing & Encryption](#hashingencryption)
+  
   - [Sending Events](#sendingevents)
   
   - [ID Based Records Processing](#idbasedrecords)
@@ -110,6 +112,13 @@ This API specification allows for implementation-specific customization through 
 ## Using Events API <a name="usingeventsapi"></a>
 
 This API is intended for server to server transmission from advertisers to their advertising partners/platforms to support measurement and optimization use cases.
+
+### Hashing & Encryption <a name="hashingencryption"></a>
+
+Hashing, encryption, and access controls serve complementary roles in protecting identifiers and sensitive data. Hashing and encryption alone are not sufficient to maintain control of data assets and they should always be used in combination with agreed upon restrictions and technical controls that ensure collaborator agreements regarding access, processing and disclosure are enforced.
+
+Fields designated as “SHA256 hashed” in the ECAPI standard should either be hashed or encrypted prior to granting access to them, depending on the level of access from the trusted environment, and local laws and regulations. The field values must be normalized according to the normalization rules defined in the ECAPI standard and prior to SHA256 hashing them, as even slight variations in input values result in different hashes that will not match. When employing encryption, participants may encrypt, either just the fields designated as SHA256 hashed or all of the data and ensure that decrypted keys are properly controlled and accessible only to explicitly authorized processors and are not exposed to other collaborators.
+
 
 ### Sending Events <a name="sendingevents"></a>
 
