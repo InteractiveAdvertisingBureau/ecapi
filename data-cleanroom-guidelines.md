@@ -1,13 +1,22 @@
-#ECAPI Guidelines for Data Clean Rooms 
+#Guidelines for Providing ECAPI Events to Data Clean Rooms
 
 ## Executive Summary:
 The ECAPI standard release in April 2026 focused on server to server transmission of conversion data. A core value proposition of the specification is the standardization of the data attributes and definitions used to measure conversions. 
 
-These guidelines were developed by the ECAPI Working Group to ensure smooth application of the ECAPI standard to data transfer use cases. The guidelines focus on data moving between systems, not how the data should be stored within any specific system. With the specific use case: how data is packaged and sent to a data clean room.
-  
-## 1. Hashing/Encryption Requirement
+These guidelines were developed by the ECAPI Working Group to ensure a common object format and data schema are shared between collaborators using the ECAPI standard to provide events to data clean rooms. The guidelines focus on data moving between systems, not how the data should be stored or processed within any specific system. 
 
-If the ECAPI v1.0 standard noted that a value is SHA256 hashed, then that value  MUST be either SHA256 hashed (per ECAPI v1.0 normalization rules) or encrypted (via Parquet Modular Encryption or application-layer encryption) before upload to a DCR. Values that are not encrypted or hashed or otherwise appropriately protected MUST NOT appear in any Parquet file delivered to a clean room.
+This document focuses on data formatting for bulk input into a data clean room. It’s focused on Parquet as it’s already an industry accepted standard for this method. There are alternative methods to provide ECAPI events to data clean rooms, including live tables, governed shares, catalog references, streams or APIs. These methods may have different requirements and are not covered in this document. 
+  
+## 1. Identifier Protection and Collaboration Controls
+
+Per the ECAPI specification, fields designated SHA256 hashed should remain hashed or may be encrypted with technical controls in data clean room use cases.
+
+For additional clarity regarding providing ECAPI events to data clean rooms, participants may provide unhashed identifiers without separate field-level or file-level encryption where the delivery and execution environment provides technical controls that enforce the same restrictions on access to the original values. In this context, “plaintext identifiers” means values that have not been hashed or separately encrypted at the field or file layer; it does not mean unprotected transmission or storage. Encryption in transit and at rest must still protect those values.
+
+For example, original identifiers may be made available to an authorized workload for normalization, validation, tokenization, or identity resolution before hashing or another approved transformation. Permission to process those identifiers does not authorize their disclosure through collaborator-visible results, exports, logs, or telemetry.
+
+Isolation from the infrastructure operator can provide additional assurance for these workflows. Where that assurance is claimed, its scope and enforcement mechanisms must be documented and independently verifiable. Infrastructure-operator isolation is separate from collaborator access controls and is not a prerequisite for using the alternatives described above.
+
 
 ### 1a. Data Compression
 
@@ -38,7 +47,7 @@ Example: A generate_lead event where the advertiser has 2 email addresses and 2 
 
 ### 2.3 Partitioning
 
-Parquet files SHOULD use Hive-style directory partitioning. The standard does not mandate a specific partition scheme -- advertisers choose based on their data volume and query patterns. 
+Parquet files should use Hive-style directory partitioning. The standard does not mandate a specific partition scheme -- advertisers choose based on their data volume and query patterns. 
 Common schemes:
 
 |Scheme | Directory Structure | When to Use |
@@ -47,16 +56,19 @@ Common schemes:
 | Campaign + Day | campaign_id=camp-123/event_date=2026-05-14/ | Multi-campaign advertisers. Most common for DCR uploads -- isolates campaigns for independent attribution queries. |
 | Data set + Day | data_set_id=acme-meta-001/event_date=2026-05-14/ | Multi-partner uploads where the same events go to multiple DCRs from a single upload pipeline. |
 
-After all files are uploaded for a partition, the uploading party must write an empty marker file named done in the partition directory to signal that the partition is complete and ready for processing. Without this signal, a reader polling the directory cannot distinguish between a partition that is still being uploaded and one that is finished. Processing an incomplete partition produces incorrect results (missing events, wrong aggregates) with no indication of error. The done-marker pattern is an established convention across batch data pipelines: Hadoop MapReduce writes a _SUCCESS file after each job, Spark's FileOutputCommitter does the same, and the WFA cross-media-measurement project uses an identical done blob to gate processing of encrypted impression shards. DCRs MUST NOT process a partition until the done marker is present. If a partition must be re-uploaded (e.g., to correct data), the uploading party should delete the done marker, replace the files, and write a new done marker.
+After all files are uploaded for a partition, the uploading party must write an empty marker file named done in the partition directory to signal that the partition is complete and ready for processing. Without this signal, a reader polling the directory cannot distinguish between a partition that is still being uploaded and one that is finished. Processing an incomplete partition produces incorrect results (missing events, wrong aggregates) with no indication of error. The done-marker pattern is an established convention across batch data pipelines: Hadoop MapReduce writes a _SUCCESS file after each job, Spark's FileOutputCommitter does the same, and the WFA cross-media-measurement project uses an identical done blob to gate processing of encrypted impression shards. DCRs must not process a partition until the done marker is present. If a partition must be re-uploaded (e.g., to correct data), the uploading party should delete the done marker, replace the files, and write a new done marker.
 
 ## 3. Platform-Specific Fields
 
 ECAPI v1.0 includes an ext (extension) object on every object. These can be used for platform-specific data. In practice, every major ad platform has proprietary fields that advertisers must include for that platform's matching and attribution to work. Talk to your platform partner for any specific guidance on how to send these values.
 
 ## 4. Parquet File Metadata (Key-Value Pairs)
-Parquet files have a footer that can store arbitrary key-value string pairs. This is the manifest mechanism -- no external manifest file is required. Every ECAPI DCR Parquet file MUST include these keys, prefixed with ecapi. to avoid collisions.
+Delivery mechanisms must convey the metadata needed to interpret ECAPI data and apply the identifier protections required by Section 1. Sections 4.1 and 4.2 describe file metadata and encryption. 
 
 ### 4.1 Required File Metadata
+
+Parquet files have a footer that can store arbitrary key-value string pairs. This is the manifest mechanism -- no external manifest file is required. Every ECAPI DCR Parquet file must include these keys, prefixed with ecapi. to avoid collisions.
+
 |Key | Example | Purpose |
 | --- | --- | --- |
 | ecapi.version | "1.0" | ECAPI schema version |
@@ -69,20 +81,15 @@ Parquet files have a footer that can store arbitrary key-value string pairs. Thi
 
 ### 4.2 Encryption Metadata (PME)
 
-Section 1 requires that values designated for SHA-256 hashing by the ECAPI v1.0 standard be either hashed or encrypted before upload. When encryption is chosen, it should use Parquet Modular Encryption (PME) per the Apache Parquet format specification. PME encrypts
-individual columns using AES and stores encryption metadata in the Parquet binary footer.
+Section 1 requires that values designated for SHA-256 hashing by the ECAPI v1.0 standard be either hashed or encrypted before upload. When encryption is chosen, it should use Parquet Modular Encryption (PME) per the Apache Parquet format specification. PME encrypts individual columns using AES and stores encryption metadata in the Parquet binary footer.
 
 Required:
 - Columns containing values that are encrypted rather than hashed must use PME.
 - The Parquet footer should use plaintext footer mode so ingestion pipelines can read column names and row counts without decryption keys.
 
+Sensitive plaintext data should always be protected before sharing with another party. Examples of protection include: hashing, trusted execution environments, query templates, redaction.
+
 We strongly recommend encrypting rather than hashing when the DCR runs validation workflows in a Trusted Execution Environment (TEE) with KMS-based key wrapping (KEK/DEK model), where the TEE obtains decryption access via workload attestation. This ensures raw values are only accessible inside the attested enclave and never exposed to the DCR operator.
-
-If encryption without a TEE is used, or if any non-attested workflow may access the decrypted data, values SHOULD also be SHA-256 hashed (i.e. ecapi.privacy_method = "both") so that raw values are never present even if encryption is bypassed or misconfigured.
-
-Key management is deployment-specific and configured between the advertiser and their DCR operator. DCR operators must document their key management approach and provide advertisers with the PME writer configuration needed to produce compatible files.
-
-The ecapi.privacy_method metadata key (Section 4.1) declares whether values were hashed ("sha256"), encrypted via PME ("encrypted"), or both ("both").
 
 ## ECAPI v1.0 DCR Extension: Parquet Schema — Option B (Nested Structs)
   
